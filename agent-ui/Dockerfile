@@ -6,14 +6,13 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copiar archivos de configuración y dependencias
-COPY pnpm-lock.yaml ./
-COPY package.json ./
+# Copiar solo archivos de configuración para instalar dependencias primero
+COPY package.json pnpm-lock.yaml ./
 
-# Instalar dependencias usando pnpm
+# Instalar dependencias (no --prod porque se necesita para build)
 RUN pnpm install
 
-# Copiar el resto del proyecto
+# Copiar el resto del código fuente
 COPY . .
 
 # Compilar el proyecto Next.js
@@ -22,22 +21,19 @@ RUN pnpm run build
 # Etapa de producción
 FROM node:18-alpine AS runner
 
-# Instalar pnpm en la imagen de producción
+# Instalar pnpm en producción
 RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Copiar artefactos del builder
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /app/next.config.js ./next.config.js
+# Copiar solo los archivos necesarios para ejecutar en producción
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod
 
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 ENV PORT=8080
-
 EXPOSE 8080
 
 CMD ["pnpm", "start"]
