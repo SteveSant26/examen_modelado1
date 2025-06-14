@@ -33,7 +33,6 @@ RUN pnpm install --prod
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/next.config.ts ./next.config.ts
 
-ENV PORT=8080
 EXPOSE 8080
 
 CMD ["pnpm", "start"]

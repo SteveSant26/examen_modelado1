@@ -4,6 +4,8 @@ from agno.storage.sqlite import SqliteStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.groq import Groq
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
+
 import os
 
 load_dotenv()
@@ -11,6 +13,12 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 AGNO_API_KEY = os.getenv("AGNO_API_KEY")
 
 agent_storage: str = "tmp/agents.db"
+
+
+origins = os.getenv("FRONTEND_URL", "")
+origins = [origin.strip() for origin in origins.split(",") if origin.strip()]
+
+
 
 web_agent = Agent(
     name="Agente web de Bryan",
@@ -47,3 +55,12 @@ weather_agent = Agent(
 )
 
 app = Playground(agents=[web_agent, weather_agent]).get_app()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
