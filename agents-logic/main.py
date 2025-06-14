@@ -1,5 +1,5 @@
 from agno.agent import Agent
-from agno.playground import Playground, serve_playground_app
+from agno.playground import Playground
 from agno.storage.sqlite import SqliteStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.groq import Groq
@@ -9,7 +9,6 @@ import os
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 AGNO_API_KEY = os.getenv("AGNO_API_KEY")
-
 
 agent_storage: str = "tmp/agents.db"
 
@@ -28,7 +27,6 @@ web_agent = Agent(
     num_history_responses=5,
     markdown=True,
 )
-
 
 weather_agent = Agent(
     name="Agente meteorológico de Bryan",
@@ -49,6 +47,3 @@ weather_agent = Agent(
 )
 
 app = Playground(agents=[web_agent, weather_agent]).get_app()
-
-if __name__ == "__main__":
-    serve_playground_app("main:app", reload=True)
