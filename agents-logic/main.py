@@ -11,13 +11,11 @@ import os
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 AGNO_API_KEY = os.getenv("AGNO_API_KEY")
+ORIGINS = os.getenv("FRONTEND_URL", "")
 
 agent_storage: str = "tmp/agents.db"
 
-
-origins = os.getenv("FRONTEND_URL", "")
-origins = [origin.strip() for origin in origins.split(",") if origin.strip()]
-
+origins = [origin.strip() for origin in ORIGINS.split(",") if origin.strip()]
 
 
 web_agent = Agent(
